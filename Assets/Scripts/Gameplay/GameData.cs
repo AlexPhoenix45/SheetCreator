@@ -1,0 +1,41 @@
+using System;
+using UnityEngine;
+
+public class GameData : MonoBehaviour
+{   
+    //Mapping
+    public static KeyCode deleteNote = KeyCode.Backspace;
+    public static KeyCode deleteSentence = KeyCode.Delete;
+    public static KeyCode octaveKeyUp = KeyCode.UpArrow;
+    public static KeyCode octaveKeyDown = KeyCode.DownArrow;
+    public static KeyCode sharpKey = KeyCode.LeftShift;
+    public static KeyCode newNote = KeyCode.Space;
+    public static KeyCode newSentence = KeyCode.Return;
+    
+    //Color
+    public static Color activeColor = new Color(1f, 0.3726415f, 0.3726415f);
+    public static Color normalColor = Color.white;
+}
+
+public enum Notes
+{
+    C,
+    CSharp,
+    D,
+    DSharp,
+    E,
+    F,
+    FSharp,
+    G,
+    GSharp,
+    A,
+    ASharp,
+    B,
+}
+
+[Serializable]
+public class Sheet
+{
+    public Notes note;
+    public int[] octave;
+}
