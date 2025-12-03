@@ -4,24 +4,57 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+    
     [SerializeField] private GameObject sentencePrefab;
     [SerializeField] private GameObject contentPos;
 
     private List<Sentence> sentences = new List<Sentence>();
-
     private Sentence currentSentence;
     private Note currentNote;
 
+    public static bool editMode = false; //0 = Sentence, 1 = Note
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(GameData.newSentence))
+        if (Input.GetKeyDown(GameData.changeModeKey))
         {
-            CreateSentence();
+            editMode = !editMode;
         }
-
-        if (Input.GetKeyDown(GameData.deleteSentence))
+        
+        if (editMode)
         {
-            DeleteSentence();
+            if (Input.GetKeyDown(GameData.newKey))
+            {
+                CreateSentence();
+            }
+
+            if (Input.GetKeyDown(GameData.deleteKey))
+            {
+                DeleteSentence();
+            }
+
+            if (Input.GetKeyDown(GameData.upKey))
+            {
+                
+            }
+
+            if (Input.GetKeyDown(GameData.downKey))
+            {
+                
+            }
+        }
+        else
+        {
+            
         }
     }
 
@@ -38,9 +71,7 @@ public class GameManager : MonoBehaviour
         GameObject tempSentence = Instantiate(sentencePrefab, contentPos.transform);
         sentences.Add(tempSentence.GetComponent<Sentence>());
         currentSentence = tempSentence.GetComponent<Sentence>();
-
         currentSentence.SetActive(true);
-        Debug.Log(sentences.Count);
     }
 
     private void DeleteSentence()
@@ -54,5 +85,14 @@ public class GameManager : MonoBehaviour
         if (index - 1 < 0) return;
         currentSentence = sentences[index - 1];
         currentSentence.SetActive(true);
+    }
+
+    private void SentenceMoveUp()
+    {
+    }
+
+    private void SentenceMoveDown()
+    {
+        
     }
 }

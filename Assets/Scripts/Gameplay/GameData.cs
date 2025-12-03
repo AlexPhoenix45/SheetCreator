@@ -4,13 +4,12 @@ using UnityEngine;
 public class GameData : MonoBehaviour
 {   
     //Mapping
-    public static KeyCode deleteNote = KeyCode.Backspace;
-    public static KeyCode deleteSentence = KeyCode.Delete;
-    public static KeyCode octaveKeyUp = KeyCode.UpArrow;
-    public static KeyCode octaveKeyDown = KeyCode.DownArrow;
+    public static KeyCode changeModeKey = KeyCode.Tab;
+    public static KeyCode deleteKey = KeyCode.Delete;
+    public static KeyCode upKey = KeyCode.UpArrow;
+    public static KeyCode downKey = KeyCode.DownArrow;
     public static KeyCode sharpKey = KeyCode.LeftShift;
-    public static KeyCode newNote = KeyCode.Space;
-    public static KeyCode newSentence = KeyCode.Return;
+    public static KeyCode newKey = KeyCode.Return;
     
     //Color
     public static Color activeColor = new Color(1f, 0.3726415f, 0.3726415f);
