@@ -18,6 +18,7 @@ public class GameData : MonoBehaviour
 
 public enum Notes
 {
+    None,
     C,
     CSharp,
     D,
@@ -33,8 +34,23 @@ public enum Notes
 }
 
 [Serializable]
-public class Sheet
+public class CompleteNote
 {
-    public Notes note;
-    public int[] octave;
+    public Notes note = Notes.None;
+    public int octave = 0;
+}
+
+[Serializable]
+public class CompleteSentence
+{
+    public CompleteNote[] notes = new []{new CompleteNote()};
+    public string lyric = null;
+}
+
+[Serializable]
+public class CompleteSheet
+{
+    public CompleteSentence[] sentences = null;
+    public string songName = null;
+    public Notes key = Notes.None;
 }
