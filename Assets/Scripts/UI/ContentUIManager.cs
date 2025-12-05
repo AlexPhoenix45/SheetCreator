@@ -5,136 +5,157 @@ using UnityEngine;
 public class ContentUIManager : MonoBehaviour
 {
     public static ContentUIManager Instance;
-    [SerializeField] private SentenceUIItem[] sentencePrefab;
+    [SerializeField] private SentenceUIItem[] sentencesUI;
     [SerializeField] private RectTransform container;
+    [SerializeField] private RectTransform viewport;
 
     private int prevOffset = 0;
     private readonly float itemHeight = 60;
     private readonly float gap = 10;
 
-    private List<CompleteSentence> sentences = new List<CompleteSentence>();
-    private CompleteSentence currentSentence = new CompleteSentence();
+    private List<CompleteSentence> sentencesData = new List<CompleteSentence>();
+    private List<CompleteNote> notesData = new List<CompleteNote>();
+    private int currentSentenceIndex = -1;
+    private int currentNoteIndex = -1;    
+
     private void Awake()
     {
         if (!Instance)
         {
             Instance = this;
         }
-        
-        UpdateSentence();
+
+        UpdateQuantitySentence();
     }
 
     private void Update()
     {
         var offset = (int)Mathf.Max(0, container.localPosition.y / itemHeight);
         if (offset == prevOffset) return;
-        Debug.Log(offset);
         UpdatePosition(offset);
-        UpdateCurrentSentence();
+        UpdateCurrentSentence(currentSentenceIndex);
         prevOffset = offset;
     }
 
     private void UpdatePosition(int offset)
     {
-        if (sentences.Count > 0)
+        if (sentencesData.Count > 0)
         {
-            for (var i = 0; i < sentencePrefab.Length; i++)
+            for (var i = 0; i < sentencesUI.Length; i++)
             {
                 var offsetIndex = offset + i;
 
-                if (offsetIndex < sentences.Count)
+                if (offsetIndex < sentencesData.Count)
                 {
-                    sentencePrefab[i].gameObject.SetActive(true);
-                    sentencePrefab[i].SetValue(sentences[offsetIndex]);
-                
-                    sentencePrefab[i].transform.localPosition = offsetIndex == 0 ? new Vector2(0, -gap) : new Vector2(0, (offsetIndex * -itemHeight) - gap);
+                    sentencesUI[i].gameObject.SetActive(true);
+                    sentencesUI[i].Init(sentencesData[offsetIndex]);
+
+                    sentencesUI[i].transform.localPosition = new Vector2(0, (offsetIndex * -itemHeight) - gap);
                 }
                 else
                 {
-                    sentencePrefab[i].gameObject.SetActive(false);
+                    sentencesUI[i].gameObject.SetActive(false);
                 }
             }
         }
         else
         {
-            foreach (var item in sentencePrefab)
+            foreach (var item in sentencesUI)
             {
                 item.gameObject.SetActive(false);
             }
         }
     }
-    
-    public static void UpdateSentence(List<CompleteSentence> sentences)
+
+    public static void UpdateQuantitySentence(List<CompleteSentence> sentences)
     {
-        Instance._UpdateSentence(sentences);
+        Instance._UpdateQuantitySentence(sentences);
     }
 
-    private void _UpdateSentence(List<CompleteSentence> _sentences)
+    private void _UpdateQuantitySentence(List<CompleteSentence> _sentences)
     {
-        sentences = _sentences;
-        
-        container.anchoredPosition = Vector2.zero;
-        var size = container.sizeDelta;
-        size.y = sentences.Count * itemHeight; //20 px top bound
-        container.sizeDelta = size;
-        
-        for (var i = 0; i < sentencePrefab.Length; i++)
-        {
-            if (i < sentences.Count - 1)
-            {
-                sentencePrefab[i].SetValue(sentences[i]);
-            }
-        }
+        sentencesData = _sentences;
 
-        UpdatePosition(prevOffset);
-    }
-    
-    private void UpdateSentence()
-    {
         container.anchoredPosition = Vector2.zero;
         var size = container.sizeDelta;
-        size.y = sentences.Count * itemHeight; //20 px top bound
+        size.y = sentencesData.Count * itemHeight + gap;
         container.sizeDelta = size;
-        
-        for (var i = 0; i < sentencePrefab.Length; i++)
+
+        for (var i = 0; i < sentencesUI.Length; i++)
         {
-            if (i < sentences.Count - 1)
+            if (i < sentencesData.Count - 1)
             {
-                sentencePrefab[i].SetValue(sentences[i]);
+                sentencesUI[i].Init(sentencesData[i]);
             }
         }
 
         UpdatePosition(prevOffset);
     }
 
-    public static void UpdateCurrentSentence(CompleteSentence sentence)
+    private void UpdateQuantitySentence()
     {
-        Instance._UpdateCurrentSentence(sentence);
+        container.anchoredPosition = Vector2.zero;
+        var size = container.sizeDelta;
+        size.y = sentencesData.Count * itemHeight + gap; //20 px top bound
+        container.sizeDelta = size;
+
+        for (var i = 0; i < sentencesUI.Length; i++)
+        {
+            if (i < sentencesData.Count - 1)
+            {
+                sentencesUI[i].Init(sentencesData[i]);
+            }
+        }
+
+        UpdatePosition(prevOffset);
     }
-    
-    private void _UpdateCurrentSentence(CompleteSentence _sentence)
+
+    public static void UpdateCurrentSentence(int index)
     {
-        this.currentSentence = _sentence;
-        
-        foreach (var item in sentencePrefab)
+        Instance._UpdateCurrentSentence(index);
+    }
+
+    private void _UpdateCurrentSentence(int index)
+    {
+        currentSentenceIndex = index;
+
+        foreach (var item in sentencesUI)
         {
             item.SetActive(false);
-            if (item.GetSentence() == currentSentence)
+            item.SaveData();
+            if (item.GetSentence() == sentencesData[currentSentenceIndex])
             {
                 item.SetActive(true);
             }
+        }
+
+        ContainerFollow(currentSentenceIndex);
+    }
+
+    public static void ContainerFollow(int index)
+    {
+        Instance._ContainerFollow(index);
+    }
+    
+    private void _ContainerFollow(int _index)
+    {
+        var pos = (_index * -itemHeight) - gap;
+        var upperBound = Mathf.Abs(pos) - (gap/2);
+        var lowerBound = Mathf.Max(0, Mathf.Abs(pos) - viewport.rect.height + itemHeight - (gap/2));
+
+        if (container.localPosition.y > upperBound)
+        {
+            container.localPosition = new Vector2(container.localPosition.x, upperBound);
+        }
+        
+        if (container.localPosition.y < lowerBound)
+        {
+            container.localPosition = new Vector2(container.localPosition.x, lowerBound);
         }
     }
 
-    private void UpdateCurrentSentence()
-    {
-        foreach (var item in sentencePrefab)
-        {
-            item.SetActive(false);
-            if (item.GetSentence() == currentSentence)
-            {
-                item.SetActive(true);
-            }
-        }
-    }
+    // private void SetActiveNote(List<CompleteNote> notesData)
+    // {
+    //     note
+    // }
 }

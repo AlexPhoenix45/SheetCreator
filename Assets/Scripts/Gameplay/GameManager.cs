@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,8 +12,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject contentPos;
 
     private CompleteSheet currentSheet = new CompleteSheet();
-    private List<CompleteSentence> sentences = new List<CompleteSentence>();
-    private List<CompleteNote> notes = new List<CompleteNote>();
+    private List<CompleteSentence> sentencesData = new List<CompleteSentence>();
+    private List<CompleteNote> notesData = new List<CompleteNote>();
     private Notes currentKey;
     private string songName;
 
@@ -39,7 +41,7 @@ public class GameManager : MonoBehaviour
 
         if (!editMode)
         {
-            if (Input.GetKeyDown(GameData.newKey))
+            if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(GameData.newKey))
             {
                 CreateSentence();
             }
@@ -67,40 +69,45 @@ public class GameManager : MonoBehaviour
     //Sentence
     private void CreateSentence()
     {
-        var tempSentence = new CompleteSentence();
-        sentences.Add(tempSentence); 
-        ContentUIManager.UpdateSentence(sentences);
-        ContentUIManager.UpdateCurrentSentence(tempSentence);
+        sentencesData.Add(new CompleteSentence());
+        currentSentenceIndex = sentencesData.Count - 1;
+        ContentUIManager.UpdateQuantitySentence(sentencesData);
+        ContentUIManager.UpdateCurrentSentence(currentSentenceIndex);
     }
 
     private void DeleteSentence()
     {
-        sentences.RemoveAt(sentences.Count - 1);
-        var tempSentence = sentences[^1];
-        ContentUIManager.UpdateSentence(sentences);
-        ContentUIManager.UpdateCurrentSentence(tempSentence);
+        sentencesData.RemoveAt(currentSentenceIndex);
+            
+        if (sentencesData.Count == 0)
+        {
+            currentSentenceIndex = -1;
+        }
+        else if (sentencesData.Count == 1)
+        {
+            currentSentenceIndex = 0;
+        }
+        
+        ContentUIManager.UpdateQuantitySentence(sentencesData);
+        ContentUIManager.UpdateCurrentSentence(currentSentenceIndex);
     }
 
     private void SentenceMoveUp()
     {
-        // var index = sentences.IndexOf(currentSentence);
-        // currentSentence.SetActive(false);
-        // currentSentence = index - 1 >= 0 ? sentences[index - 1] : sentences[^1];
-        // currentSentence.SetActive(true);
+        currentSentenceIndex = currentSentenceIndex - 1 < 0 ? sentencesData.Count - 1 : currentSentenceIndex - 1; 
+        ContentUIManager.UpdateCurrentSentence(currentSentenceIndex);
     }
 
     private void SentenceMoveDown()
     {
-        // var index = sentences.IndexOf(currentSentence);
-        // currentSentence.SetActive(false);
-        // currentSentence = index + 1 < sentences.Count ? sentences[index + 1] : sentences[0];
-        // currentSentence.SetActive(true);
+        currentSentenceIndex = currentSentenceIndex + 1 >= sentencesData.Count ? 0 : currentSentenceIndex + 1; 
+        ContentUIManager.UpdateCurrentSentence(currentSentenceIndex);
     }
 
     //Mode
     private void SetMode()
     {
-        if (sentences.Count == 0)
+        if (sentencesData.Count == 0)
         {
             editMode = false;
         }
@@ -108,13 +115,21 @@ public class GameManager : MonoBehaviour
 
     private void ChangeMode()
     {
-        if (sentences.Count == 0)
+        if (sentencesData.Count == 0)
         {
             editMode = false;
         }
         else
         {
-            editMode = !editMode;
+            if (!editMode)
+            {
+                editMode = true;
+                
+            }
+            else
+            {
+                editMode = false;
+            }
         }
     }
 }

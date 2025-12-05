@@ -79,7 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notesContainer: {fileID: 0}
   notePrefab: {fileID: 6848317303035380875, guid: e7952a96beaba4440a8e119ea0cce5a5, type: 3}
-  lyric: {fileID: 0}
+  lyricIF: {fileID: 0}
   bgImage: {fileID: 0}
 --- !u!1 &1316577746024458949
 GameObject:
@@ -407,10 +407,10 @@ RectTransform:
   - {fileID: 6374457687986179335}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 647.681, y: 50}
+  m_SizeDelta: {x: -40, y: 50}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &7717314046870971384
 MonoBehaviour:
@@ -426,7 +426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   notesContainer: {fileID: 6068803332683864713}
   notePrefab: {fileID: 6848317303035380875, guid: e7952a96beaba4440a8e119ea0cce5a5, type: 3}
-  lyric: {fileID: 1181461528085093869}
+  lyricIF: {fileID: 1181461528085093869}
   bgImage: {fileID: 597457397797784348}
 --- !u!1 &4959405538247343902
 GameObject:
