@@ -57,6 +57,7 @@ public class NoteUIItem : MonoBehaviour
     
     public void SetActive(bool value)
     {
+        if (!bgImage) return;
         bgImage.color = value ? GameData.activeColor : GameData.normalColor;
     }
 }

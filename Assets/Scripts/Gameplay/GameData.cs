@@ -8,8 +8,25 @@ public class GameData : MonoBehaviour
     public static KeyCode deleteKey = KeyCode.Delete;
     public static KeyCode upKey = KeyCode.UpArrow;
     public static KeyCode downKey = KeyCode.DownArrow;
+    public static KeyCode rightKey = KeyCode.RightArrow;
+    public static KeyCode leftKey = KeyCode.LeftArrow;
     public static KeyCode sharpKey = KeyCode.LeftShift;
     public static KeyCode newKey = KeyCode.Return;
+    public static KeyCode cKey = KeyCode.Alpha1;
+    public static KeyCode dKey = KeyCode.Alpha2;
+    public static KeyCode eKey = KeyCode.Alpha3;
+    public static KeyCode fKey = KeyCode.Alpha4;
+    public static KeyCode gKey = KeyCode.Alpha5;
+    public static KeyCode aKey = KeyCode.Alpha6;
+    public static KeyCode bKey = KeyCode.Alpha7;
+    public static KeyCode cKeyAlt = KeyCode.Keypad1;
+    public static KeyCode dKeyAlt = KeyCode.Keypad2;
+    public static KeyCode eKeyAlt = KeyCode.Keypad3;
+    public static KeyCode fKeyAlt = KeyCode.Keypad4;
+    public static KeyCode gKeyAlt = KeyCode.Keypad5;
+    public static KeyCode aKeyAlt = KeyCode.Keypad6;
+    public static KeyCode bKeyAlt = KeyCode.Keypad7;
+    
     
     //Color
     public static Color activeColor = new Color(1f, 0.3726415f, 0.3726415f);

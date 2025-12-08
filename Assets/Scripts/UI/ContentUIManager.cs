@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ContentUIManager : MonoBehaviour
@@ -33,7 +34,7 @@ public class ContentUIManager : MonoBehaviour
         var offset = (int)Mathf.Max(0, container.localPosition.y / itemHeight);
         if (offset == prevOffset) return;
         UpdatePosition(offset);
-        UpdateCurrentSentence(currentSentenceIndex);
+        UpdateCurrentSentence(currentSentenceIndex, true);
         prevOffset = offset;
     }
 
@@ -110,22 +111,21 @@ public class ContentUIManager : MonoBehaviour
         UpdatePosition(prevOffset);
     }
 
-    public static void UpdateCurrentSentence(int index)
+    public static void UpdateCurrentSentence(int index, bool activeValue)
     {
-        Instance._UpdateCurrentSentence(index);
+        Instance._UpdateCurrentSentence(index, activeValue);
     }
 
-    private void _UpdateCurrentSentence(int index)
+    private void _UpdateCurrentSentence(int index, bool _activeValue)
     {
         currentSentenceIndex = index;
 
         foreach (var item in sentencesUI)
         {
-            item.SetActive(false);
-            item.SaveData();
+            item.SetActiveSentence(false);
             if (item.GetSentence() == sentencesData[currentSentenceIndex])
             {
-                item.SetActive(true);
+                item.SetActiveSentence(_activeValue);
             }
         }
 
@@ -154,8 +154,45 @@ public class ContentUIManager : MonoBehaviour
         }
     }
 
-    // private void SetActiveNote(List<CompleteNote> notesData)
-    // {
-    //     note
-    // }
+    public static void UpdateCurrentNote(int noteIndex, bool activeValue) 
+    {
+        Instance._UpdateCurrentNote(noteIndex, activeValue);
+    }
+        
+    
+    private void _UpdateCurrentNote(int _noteIndex, bool _activeValue)
+    {
+        currentNoteIndex = _noteIndex;
+        sentencesUI[currentSentenceIndex].UpdatePositionNote(_noteIndex, _activeValue);     
+    }
+
+    public static void UpdateQuantityNote(List<CompleteNote> notes)
+    {
+        Instance._UpdateQuantityNote(notes);
+    }
+
+    private void _UpdateQuantityNote(List<CompleteNote> _notes)
+    {
+        sentencesUI[currentSentenceIndex].UpdateQuantityNote(_notes);
+    }
+
+    public static void EditNote(CompleteNote note)
+    {
+        Instance._EditNote(note);
+    }
+
+    private void _EditNote(CompleteNote _note)
+    {
+        // sentencesUI[currentSentenceIndex].
+    }
+
+    public static void SaveSentence()
+    {
+        Instance._SaveSentence();
+    }
+
+    private void _SaveSentence()
+    {
+        sentencesUI[currentSentenceIndex - prevOffset].SaveData();
+    }
 }
