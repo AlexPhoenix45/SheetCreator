@@ -14,7 +14,6 @@ public class SentenceUIItem : MonoBehaviour
     
     private List<NoteUIItem> notesUI = new List<NoteUIItem>();
     private List<CompleteNote> notesData = new List<CompleteNote>();
-    private CompleteNote currentNote = new CompleteNote();
     
     private CompleteSentence sentence;
     private int activeNoteIndex = 0;
@@ -91,6 +90,6 @@ public class SentenceUIItem : MonoBehaviour
 
     public void EditNote(CompleteNote note)
     {
-        
+        notesUI[activeNoteIndex].UpdateNote(note);
     }
 }

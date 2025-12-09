@@ -183,7 +183,7 @@ public class ContentUIManager : MonoBehaviour
 
     private void _EditNote(CompleteNote _note)
     {
-        // sentencesUI[currentSentenceIndex].
+        sentencesUI[currentSentenceIndex].EditNote(_note);
     }
 
     public static void SaveSentence()

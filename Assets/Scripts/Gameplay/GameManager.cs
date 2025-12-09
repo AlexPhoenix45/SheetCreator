@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(GameData.newKey))
+            if ((Input.GetKey(GameData.addNewKey) || Input.GetKey(GameData.addNewKeyAlt)) && Input.GetKeyDown(GameData.newKey))
             {
                 CreateNote();
             }
@@ -92,79 +92,289 @@ public class GameManager : MonoBehaviour
                 NoteMoveLeft();
             }
 
-            if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)))
+            if ((Input.GetKey(GameData.sharpKey) || Input.GetKey(GameData.sharpKeyAlt)))
             {
                 if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.CSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.DSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.F,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.FSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.GSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.ASharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.C,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+            }
+            else if ((Input.GetKey(GameData.flatKey) || Input.GetKey(GameData.flatKeyAlt)))
+            {
+                if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.B,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.CSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.DSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.E,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.FSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.GSharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
+                }
+
+                if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
+                {
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.ASharp,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
             }
             else
             {
                 if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.C,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.D,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.E,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.F,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.G,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.A,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote();
                 }
 
                 if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
                 {
-                    
+                    var oldOctave = notesData[currentNoteIndex].octave;
+                    notesData[currentNoteIndex] = new CompleteNote()
+                    {
+                        note = Notes.B,
+                        octave = oldOctave,
+                    };
+                    ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                    SaveNote(); 
                 }
+            }
+
+            if (Input.GetKeyDown(GameData.octaveUp))
+            {
+                var oldOctave = notesData[currentNoteIndex].octave;
+                var oldNote = notesData[currentNoteIndex].note;
+                notesData[currentNoteIndex] = new CompleteNote()
+                {
+                    note = oldNote,
+                    octave = oldOctave+1,
+                };
+                ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                SaveNote();
+            }
+
+            if (Input.GetKeyDown(GameData.octaveDown))
+            {
+                var oldOctave = notesData[currentNoteIndex].octave;
+                var oldNote = notesData[currentNoteIndex].note;
+                notesData[currentNoteIndex] = new CompleteNote()
+                {
+                    note = oldNote,
+                    octave = oldOctave-1,
+                };
+                ContentUIManager.EditNote(notesData[currentNoteIndex]);
+                SaveNote();
             }
         }
     }
@@ -254,10 +464,10 @@ public class GameManager : MonoBehaviour
     //Note
     private void CreateNote()
     {
-        SaveNote();
         notesData = sentencesData[currentSentenceIndex].notes.ToList();
         notesData.Add(new CompleteNote());
         currentNoteIndex = notesData.Count - 1;
+        SaveNote();
         ContentUIManager.UpdateQuantityNote(notesData);
         ContentUIManager.UpdateCurrentNote(currentNoteIndex, true);
     }
@@ -266,8 +476,8 @@ public class GameManager : MonoBehaviour
     {
         if (notesData.Count == 0) return;
         notesData.RemoveAt(currentNoteIndex);
-        SaveNote();
         currentNoteIndex--;
+        SaveNote();
         ContentUIManager.UpdateQuantityNote(notesData);
         ContentUIManager.UpdateCurrentNote(currentNoteIndex, true);
     }
@@ -286,6 +496,8 @@ public class GameManager : MonoBehaviour
         ContentUIManager.UpdateCurrentNote(currentNoteIndex, true);
     }
 
+    //Save
+    
     private void SaveNote()
     {
         sentencesData[currentSentenceIndex].notes = notesData.ToArray();
