@@ -18,6 +18,7 @@ public class SentenceUIItem : MonoBehaviour
     
     private CompleteSentence sentence;
     private int activeNoteIndex = 0;
+    private bool isSelected = false;
     
     public void SetActiveSentence(bool value)
     {
@@ -26,11 +27,13 @@ public class SentenceUIItem : MonoBehaviour
         {
             lyricIF.Select();
             lyricIF.ActivateInputField();
+            isSelected = true;
         }
         else
         {
             lyricIF.DeactivateInputField();
             EventSystem.current.SetSelectedGameObject(null);
+            isSelected = false;
         }
     }
     
@@ -53,6 +56,7 @@ public class SentenceUIItem : MonoBehaviour
         }
         
         lyricIF.onSubmit.AddListener(OnSubmit_LyricIF);
+        // lyricIF.onSelect.AddListener(OnSelect_LyricIF);
     }
 
     private void OnSubmit_LyricIF(string lyricText)
@@ -64,11 +68,6 @@ public class SentenceUIItem : MonoBehaviour
     {
         if (sentence == null) return;
         sentence.lyric = lyricIF.text;
-    }
-    
-    public CompleteSentence GetSentence()
-    {
-        return sentence;
     }
 
     public void UpdateQuantityNote(List<CompleteNote> notes)
@@ -111,5 +110,16 @@ public class SentenceUIItem : MonoBehaviour
     public void EditLyric()
     {
         lyricIF.Select();
+    }
+
+    private void OnSelect_LyricIF(string lyricText)
+    {
+        if (!isSelected) ContentUIManager.UpdateCurrentSentence(this, true);
+    }
+
+    private void OnDisable()
+    {
+        lyricIF?.onSelect.RemoveAllListeners();
+        lyricIF?.onSubmit.RemoveAllListeners();
     }
 }
