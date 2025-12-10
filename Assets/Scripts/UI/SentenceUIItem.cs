@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class SentenceUIItem : MonoBehaviour
@@ -20,10 +21,16 @@ public class SentenceUIItem : MonoBehaviour
     
     public void SetActiveSentence(bool value)
     {
-        bgImage.color = value ? GameData.activeColor : GameData.normalColor;
+        bgImage.color = value ? GameData.activeColor : GameData.normalColor; 
         if (value)
         {
-            // lyricIF.Select();
+            lyricIF.Select();
+            lyricIF.ActivateInputField();
+        }
+        else
+        {
+            lyricIF.DeactivateInputField();
+            EventSystem.current.SetSelectedGameObject(null);
         }
     }
     
@@ -91,5 +98,18 @@ public class SentenceUIItem : MonoBehaviour
     public void EditNote(CompleteNote note)
     {
         notesUI[activeNoteIndex].UpdateNote(note);
+    }
+
+    public void RefreshNote()
+    {
+        foreach (var item in notesUI)
+        {
+            item.UpdateNote();
+        }
+    }
+
+    public void EditLyric()
+    {
+        lyricIF.Select();
     }
 }

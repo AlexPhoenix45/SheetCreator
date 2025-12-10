@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private int currentSentenceIndex = 0;
     private int currentNoteIndex = 0;
     
-    public static bool editMode = false; //0 = Sentence, 1 = Note
+    private string lastKeyPress = "None";
 
     private void Awake()
     {
@@ -30,6 +30,8 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        Screen.fullScreenMode = FullScreenMode.Windowed;
 
         SetMode();
     }
@@ -41,32 +43,51 @@ public class GameManager : MonoBehaviour
             var debugText = sentencesData[currentSentenceIndex].lyric + "\n";
             debugText += sentencesData[currentSentenceIndex].notes.Aggregate("", (current, item) => current + (item.note + "" + item.octave + " "));
             DebugManager.AddDebugText("sentencesNotes", debugText);
+            DebugManager.AddDebugText("screenHeight", Screen.height.ToString());
+            DebugManager.AddDebugText("lastKeyPressed", lastKeyPress);
         }
         
         if (Input.GetKeyDown(GameData.changeModeKey))
         {
+            lastKeyPress = "changeModeKey";
             ChangeMode();
         }
 
-        if (!editMode)
+        if (Input.GetKeyDown(GameData.sharpSwitchKey))
+        {
+            lastKeyPress = "sharpSwitchKey";
+            SharpSwitch();
+        }
+
+        if (!GameData.editMode)
         {
             if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) && Input.GetKeyDown(GameData.newKey))
             {
+                lastKeyPress = "shift + newKey";
                 CreateSentence();
+            }
+
+            if (Input.GetKeyDown(GameData.editLyricKey))
+            {
+                lastKeyPress = "editLyricKey";
+                EditLyric();
             }
 
             if (Input.GetKeyDown(GameData.deleteKey))
             {
+                lastKeyPress = "deleteKey";
                 DeleteSentence();
             }
 
             if (Input.GetKeyDown(GameData.upKey))
             {
+                lastKeyPress = "upKey";
                 SentenceMoveUp();
             }
 
             if (Input.GetKeyDown(GameData.downKey))
             {
+                lastKeyPress = "downKey";
                 SentenceMoveDown();
             }
         }
@@ -74,21 +95,25 @@ public class GameManager : MonoBehaviour
         {
             if ((Input.GetKey(GameData.addNewKey) || Input.GetKey(GameData.addNewKeyAlt)) && Input.GetKeyDown(GameData.newKey))
             {
+                lastKeyPress = "shift + newKey";
                 CreateNote();
             }
 
             if (Input.GetKeyDown(GameData.deleteKey))
             {
+                lastKeyPress = "deleteKey";
                 DeleteNote();
             }
 
             if (Input.GetKeyDown(GameData.rightKey))
             {
+                lastKeyPress = "rightKey";
                 NoteMoveRight();
             }
 
             if (Input.GetKeyDown(GameData.leftKey))
             {
+                lastKeyPress = "leftKey";
                 NoteMoveLeft();
             }
 
@@ -96,6 +121,7 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
                 {
+                    lastKeyPress = "shift + cKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -108,6 +134,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
                 {
+                    lastKeyPress = "shift + dKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -120,6 +147,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
                 {
+                    lastKeyPress = "shift + eKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -132,6 +160,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
                 {
+                    lastKeyPress = "shift + fKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -144,6 +173,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
                 {
+                    lastKeyPress = "shift + gKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -156,6 +186,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
                 {
+                    lastKeyPress = "shift + aKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -168,6 +199,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
                 {
+                    lastKeyPress = "shift + bKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -182,6 +214,7 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
                 {
+                    lastKeyPress = "ctrl + cKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -194,6 +227,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
                 {
+                    lastKeyPress = "ctrl + dKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -206,6 +240,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
                 {
+                    lastKeyPress = "ctrl + eKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -218,6 +253,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
                 {
+                    lastKeyPress = "ctrl + fKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -230,6 +266,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
                 {
+                    lastKeyPress = "ctrl + gKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -242,6 +279,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
                 {
+                    lastKeyPress = "ctrl + aKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -254,6 +292,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
                 {
+                    lastKeyPress = "ctrl + bKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -268,6 +307,7 @@ public class GameManager : MonoBehaviour
             {
                 if (Input.GetKeyDown(GameData.cKey) || Input.GetKeyDown(GameData.cKeyAlt))
                 {
+                    lastKeyPress = "cKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -280,6 +320,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.dKey) || Input.GetKeyDown(GameData.dKeyAlt))
                 {
+                    lastKeyPress = "dKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -292,6 +333,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.eKey) || Input.GetKeyDown(GameData.eKeyAlt))
                 {
+                    lastKeyPress = "eKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -304,6 +346,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.fKey) || Input.GetKeyDown(GameData.fKeyAlt))
                 {
+                    lastKeyPress = "fKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -316,6 +359,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.gKey) || Input.GetKeyDown(GameData.gKeyAlt))
                 {
+                    lastKeyPress = "gKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -328,6 +372,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.aKey) || Input.GetKeyDown(GameData.aKeyAlt))
                 {
+                    lastKeyPress = "aKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -340,6 +385,7 @@ public class GameManager : MonoBehaviour
 
                 if (Input.GetKeyDown(GameData.bKey) || Input.GetKeyDown(GameData.bKeyAlt))
                 {
+                    lastKeyPress = "bKey";
                     var oldOctave = notesData[currentNoteIndex].octave;
                     notesData[currentNoteIndex] = new CompleteNote()
                     {
@@ -351,8 +397,9 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-            if (Input.GetKeyDown(GameData.octaveUp))
+            if (Input.GetKeyDown(GameData.octaveUpKey))
             {
+                lastKeyPress = "octaveUp";
                 var oldOctave = notesData[currentNoteIndex].octave;
                 var oldNote = notesData[currentNoteIndex].note;
                 notesData[currentNoteIndex] = new CompleteNote()
@@ -364,8 +411,9 @@ public class GameManager : MonoBehaviour
                 SaveNote();
             }
 
-            if (Input.GetKeyDown(GameData.octaveDown))
+            if (Input.GetKeyDown(GameData.octaveDownKey))
             {
+                lastKeyPress = "octaveDown";
                 var oldOctave = notesData[currentNoteIndex].octave;
                 var oldNote = notesData[currentNoteIndex].note;
                 notesData[currentNoteIndex] = new CompleteNote()
@@ -386,6 +434,7 @@ public class GameManager : MonoBehaviour
         currentSentenceIndex = sentencesData.Count - 1;
         ContentUIManager.UpdateQuantitySentence(sentencesData);
         ContentUIManager.UpdateCurrentSentence(currentSentenceIndex, true);
+        ContentUIManager.ContainerFollow(currentSentenceIndex);
     }
 
     private void DeleteSentence()
@@ -411,6 +460,7 @@ public class GameManager : MonoBehaviour
         currentSentenceIndex = currentSentenceIndex - 1 < 0 ? sentencesData.Count - 1 : currentSentenceIndex - 1; 
         ContentUIManager.SaveSentence();
         ContentUIManager.UpdateCurrentSentence(currentSentenceIndex, true);
+        ContentUIManager.ContainerFollow(currentSentenceIndex);
     }
 
     private void SentenceMoveDown()
@@ -418,6 +468,18 @@ public class GameManager : MonoBehaviour
         currentSentenceIndex = currentSentenceIndex + 1 >= sentencesData.Count ? 0 : currentSentenceIndex + 1; 
         ContentUIManager.SaveSentence();
         ContentUIManager.UpdateCurrentSentence(currentSentenceIndex, true);
+        ContentUIManager.ContainerFollow(currentSentenceIndex);
+    }
+
+    private void SharpSwitch()
+    {
+        GameData.isSharpNotes = !GameData.isSharpNotes;        
+        ContentUIManager.SharpSwitch();
+    }
+
+    private void EditLyric()
+    {
+        ContentUIManager.EditLyric();
     }
 
     //Mode
@@ -425,7 +487,7 @@ public class GameManager : MonoBehaviour
     {
         if (sentencesData.Count == 0)
         {
-            editMode = false;
+            GameData.editMode = false;
         }
     }
 
@@ -433,16 +495,16 @@ public class GameManager : MonoBehaviour
     {
         if (sentencesData.Count == 0)
         {
-            editMode = false;
+            GameData.editMode = false;
         }
         else
         {
-            if (!editMode)
+            if (!GameData.editMode)
             {
-                editMode = true;
+                GameData.editMode = true;
                 
                 notesData = sentencesData[currentSentenceIndex].notes.ToList();
-                currentNoteIndex = notesData.Count - 1;
+                currentNoteIndex = 0;
                 ContentUIManager.UpdateCurrentSentence(currentSentenceIndex, false);
 
                 if (currentNoteIndex < 0) return;
@@ -451,7 +513,7 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                editMode = false;
+                GameData.editMode = false;
                 currentNoteIndex = 0;
                 
                 SaveNote();

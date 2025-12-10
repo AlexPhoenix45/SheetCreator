@@ -15,6 +15,7 @@ public class GameData : MonoBehaviour
     public static KeyCode flatKey = KeyCode.LeftControl;
     public static KeyCode flatKeyAlt = KeyCode.RightControl;
     public static KeyCode newKey = KeyCode.Return;
+    public static KeyCode editLyricKey = KeyCode.Return;
     public static KeyCode addNewKey = KeyCode.LeftShift;
     public static KeyCode addNewKeyAlt = KeyCode.RightShift;
     public static KeyCode cKey = KeyCode.Alpha1;
@@ -31,13 +32,17 @@ public class GameData : MonoBehaviour
     public static KeyCode gKeyAlt = KeyCode.Keypad5;
     public static KeyCode aKeyAlt = KeyCode.Keypad6;
     public static KeyCode bKeyAlt = KeyCode.Keypad7;
-    public static KeyCode octaveUp = KeyCode.UpArrow;
-    public static KeyCode octaveDown = KeyCode.DownArrow;
-    
+    public static KeyCode octaveUpKey = KeyCode.UpArrow;
+    public static KeyCode octaveDownKey = KeyCode.DownArrow;
+    public static KeyCode sharpSwitchKey = KeyCode.F1;
     
     //Color
     public static Color activeColor = new Color(1f, 0.3726415f, 0.3726415f);
     public static Color normalColor = Color.white;
+
+    //Variable
+    public static bool editMode = false; //0 = Sentence, 1 = Note
+    public static bool isSharpNotes = true;
 }
 
 public enum Notes

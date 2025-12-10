@@ -16,9 +16,11 @@ public class ContentUIManager : MonoBehaviour
 
     private List<CompleteSentence> sentencesData = new List<CompleteSentence>();
     private List<CompleteNote> notesData = new List<CompleteNote>();
-    private int currentSentenceIndex = -1;
-    private int currentNoteIndex = -1;    
-
+    private int currentSentenceDataIndex = -1;
+    private int currentNoteIndex = -1;
+    private int sentencesUILength = 0;
+    private int prevSentenceUILength = -1;
+    
     private void Awake()
     {
         if (!Instance)
@@ -32,17 +34,20 @@ public class ContentUIManager : MonoBehaviour
     private void Update()
     {
         var offset = (int)Mathf.Max(0, container.localPosition.y / itemHeight);
-        if (offset == prevOffset) return;
+        sentencesUILength = Mathf.CeilToInt(Screen.height / (itemHeight + gap));
+
+        if (prevOffset == offset && prevSentenceUILength == sentencesUILength) return;
         UpdatePosition(offset);
-        UpdateCurrentSentence(currentSentenceIndex, true);
+        if (sentencesData.Count > 0) UpdateCurrentSentence(currentSentenceDataIndex, true);
         prevOffset = offset;
+        prevSentenceUILength = sentencesUILength;
     }
 
     private void UpdatePosition(int offset)
     {
         if (sentencesData.Count > 0)
         {
-            for (var i = 0; i < sentencesUI.Length; i++)
+            for (var i = 0; i < sentencesUILength; i++)
             {
                 var offsetIndex = offset + i;
 
@@ -61,8 +66,9 @@ public class ContentUIManager : MonoBehaviour
         }
         else
         {
-            foreach (var item in sentencesUI)
+            for (var i = 0; i < sentencesUILength; i++)
             {
+                var item = sentencesUI[i];
                 item.gameObject.SetActive(false);
             }
         }
@@ -82,7 +88,7 @@ public class ContentUIManager : MonoBehaviour
         size.y = sentencesData.Count * itemHeight + gap;
         container.sizeDelta = size;
 
-        for (var i = 0; i < sentencesUI.Length; i++)
+        for (var i = 0; i < sentencesUILength; i++)
         {
             if (i < sentencesData.Count - 1)
             {
@@ -100,7 +106,7 @@ public class ContentUIManager : MonoBehaviour
         size.y = sentencesData.Count * itemHeight + gap; //20 px top bound
         container.sizeDelta = size;
 
-        for (var i = 0; i < sentencesUI.Length; i++)
+        for (var i = 0; i < sentencesUILength; i++)
         {
             if (i < sentencesData.Count - 1)
             {
@@ -118,18 +124,17 @@ public class ContentUIManager : MonoBehaviour
 
     private void _UpdateCurrentSentence(int index, bool _activeValue)
     {
-        currentSentenceIndex = index;
+        currentSentenceDataIndex = index;
 
-        foreach (var item in sentencesUI)
+        for (var i = 0; i < sentencesUILength; i++)
         {
+            var item = sentencesUI[i];
             item.SetActiveSentence(false);
-            if (item.GetSentence() == sentencesData[currentSentenceIndex])
+            if (item.GetSentence() == sentencesData[currentSentenceDataIndex])
             {
                 item.SetActiveSentence(_activeValue);
             }
         }
-
-        ContainerFollow(currentSentenceIndex);
     }
 
     public static void ContainerFollow(int index)
@@ -139,7 +144,9 @@ public class ContentUIManager : MonoBehaviour
     
     private void _ContainerFollow(int _index)
     {
-        var pos = (_index * -itemHeight) - gap;
+        currentSentenceDataIndex = _index;
+        
+        var pos = (currentSentenceDataIndex * -itemHeight) - gap;
         var upperBound = Mathf.Abs(pos) - (gap/2);
         var lowerBound = Mathf.Max(0, Mathf.Abs(pos) - viewport.rect.height + itemHeight - (gap/2));
 
@@ -163,7 +170,7 @@ public class ContentUIManager : MonoBehaviour
     private void _UpdateCurrentNote(int _noteIndex, bool _activeValue)
     {
         currentNoteIndex = _noteIndex;
-        sentencesUI[currentSentenceIndex].UpdatePositionNote(_noteIndex, _activeValue);     
+        sentencesUI[currentSentenceDataIndex - prevOffset].UpdatePositionNote(currentNoteIndex, _activeValue);     
     }
 
     public static void UpdateQuantityNote(List<CompleteNote> notes)
@@ -173,7 +180,7 @@ public class ContentUIManager : MonoBehaviour
 
     private void _UpdateQuantityNote(List<CompleteNote> _notes)
     {
-        sentencesUI[currentSentenceIndex].UpdateQuantityNote(_notes);
+        sentencesUI[currentSentenceDataIndex - prevOffset].UpdateQuantityNote(_notes);
     }
 
     public static void EditNote(CompleteNote note)
@@ -183,7 +190,7 @@ public class ContentUIManager : MonoBehaviour
 
     private void _EditNote(CompleteNote _note)
     {
-        sentencesUI[currentSentenceIndex].EditNote(_note);
+        sentencesUI[currentSentenceDataIndex - prevOffset].EditNote(_note);
     }
 
     public static void SaveSentence()
@@ -193,6 +200,30 @@ public class ContentUIManager : MonoBehaviour
 
     private void _SaveSentence()
     {
-        sentencesUI[currentSentenceIndex - prevOffset].SaveData();
+        sentencesUI[currentSentenceDataIndex - prevOffset].SaveData();
+    }
+
+    public static void SharpSwitch()
+    {
+        Instance._SharpSwitch();
+    }
+
+    private void _SharpSwitch()
+    {
+        for (var i = 0; i < sentencesUILength; i++)
+        {
+            var item = sentencesUI[i];
+            item.RefreshNote();
+        }
+    }
+
+    public static void EditLyric()
+    {
+        Instance._EditLyric();
+    }
+
+    private void _EditLyric()
+    {
+        sentencesUI[currentSentenceDataIndex - prevOffset].EditLyric();
     }
 }
