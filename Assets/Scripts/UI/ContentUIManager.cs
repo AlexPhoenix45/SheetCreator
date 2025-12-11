@@ -15,9 +15,8 @@ public class ContentUIManager : MonoBehaviour
 
     private List<SentenceUIItem> sentencesUI = new List<SentenceUIItem>();
     private List<CompleteSentence> sentencesData = new List<CompleteSentence>();
-    private List<CompleteNote> notesData = new List<CompleteNote>();
-    private int currentSentenceIndex = -1;
-    private int currentNoteIndex = -1;
+        
+    private int prevCurrentSentenceIndex = 0;
 
     private void Awake()
     {
@@ -27,6 +26,8 @@ public class ContentUIManager : MonoBehaviour
         }
     }
 
+    //Sentence
+    
     public static void UpdateQuantitySentence(List<CompleteSentence> sentences)
     {
         Instance._UpdateQuantitySentence(sentences);
@@ -44,10 +45,11 @@ public class ContentUIManager : MonoBehaviour
         sentencesUI.Clear();
 
         var posY = gap;
-        foreach (CompleteSentence item in sentencesData)
+        for (var i = 0; i < sentencesData.Count; i++)
         {
+            var item = sentencesData[i];
             var tempSentence = Instantiate(sentencePrefab, sentencesContainer);
-            tempSentence.Init(item);
+            tempSentence.Init(item, i);
             tempSentence.transform.localPosition = new Vector2(tempSentence.transform.localPosition.x, -posY);
             sentencesUI.Add(tempSentence);
             posY += itemHeight;
@@ -56,9 +58,9 @@ public class ContentUIManager : MonoBehaviour
         UpdateSentenceSize();
     }
 
-    public static void UpdateCurrentSentence(int currentSentenceIndex, bool showSentence)
+    public static void UpdateCurrentSentence(bool showSentence)
     {
-        Instance._UpdateCurrentSentence(currentSentenceIndex, showSentence);
+        Instance._UpdateCurrentSentence(showSentence);
     }
 
     public static void UpdateCurrentSentence(SentenceUIItem item, bool showSentence)
@@ -66,22 +68,34 @@ public class ContentUIManager : MonoBehaviour
         Instance._UpdateCurrentSentence(item, showSentence);
     }
 
-    private void _UpdateCurrentSentence(int _currentSentenceIndex, bool _showSentence)
+    private void _UpdateCurrentSentence(bool _showSentence)
     {
-        if (currentSentenceIndex >= 0) sentencesUI[currentSentenceIndex].SetActiveSentence(false);
-        currentSentenceIndex = _currentSentenceIndex;
-        sentencesUI[currentSentenceIndex].SetActiveSentence(_showSentence);
+        if (prevCurrentSentenceIndex < sentencesUI.Count)
+        {
+            sentencesUI[prevCurrentSentenceIndex].SetActiveSentence(false);
+        }
+
+        if (GameManager.currentSentenceIndex == -1) return;
+        sentencesUI[GameManager.currentSentenceIndex].SetActiveSentence(_showSentence);
+        prevCurrentSentenceIndex = GameManager.currentSentenceIndex;
     }
 
     private void _UpdateCurrentSentence(SentenceUIItem _item, bool _showSentence)
     {
+        if (prevCurrentSentenceIndex >= sentencesUI.Count)
+        {
+            sentencesUI[prevCurrentSentenceIndex].SetActiveSentence(false);
+        }
+        
+        if (GameManager.currentSentenceIndex == -1) return;
         for (var i = 0; i < sentencesUI.Count; i++)
         {
             sentencesUI[i].SetActiveSentence(false);
             if (sentencesUI[i] != _item) continue;
-            currentSentenceIndex = i;
+            GameManager.currentSentenceIndex = i;
             sentencesUI[i].SetActiveSentence(_showSentence);
         }
+        prevCurrentSentenceIndex = GameManager.currentSentenceIndex;
     }
 
     private void UpdateSentenceSize()
@@ -98,9 +112,9 @@ public class ContentUIManager : MonoBehaviour
 
     private void _ContainerFollow(int _index)
     {
-        currentSentenceIndex = _index;
+        GameManager.currentSentenceIndex = _index;
 
-        var pos = (currentSentenceIndex * -itemHeight) - gap;
+        var pos = (GameManager.currentSentenceIndex * -itemHeight) - gap;
         var upperBound = Mathf.Abs(pos) - (gap / 2);
         var lowerBound = Mathf.Max(0, Mathf.Abs(pos) - viewport.rect.height + itemHeight - (gap / 2));
 
@@ -115,16 +129,16 @@ public class ContentUIManager : MonoBehaviour
         }
     }
 
-    public static void UpdateCurrentNote(int noteIndex, bool activeValue)
+    //Note
+    
+    public static void UpdateCurrentNote(bool activeValue)
     {
-        Instance._UpdateCurrentNote(noteIndex, activeValue);
+        Instance._UpdateCurrentNote(activeValue);
     }
 
-
-    private void _UpdateCurrentNote(int _noteIndex, bool _activeValue)
+    private void _UpdateCurrentNote(bool _activeValue)
     {
-        currentNoteIndex = _noteIndex;
-        sentencesUI[currentSentenceIndex].UpdatePositionNote(currentNoteIndex, _activeValue);
+        sentencesUI[GameManager.currentSentenceIndex].UpdatePositionNote(_activeValue);
     }
 
     public static void UpdateQuantityNote(List<CompleteNote> notes)
@@ -134,7 +148,7 @@ public class ContentUIManager : MonoBehaviour
 
     private void _UpdateQuantityNote(List<CompleteNote> _notes)
     {
-        sentencesUI[currentSentenceIndex].UpdateQuantityNote(_notes);
+        sentencesUI[GameManager.currentSentenceIndex].UpdateQuantityNote(_notes);
     }
 
     public static void EditNote(CompleteNote note)
@@ -144,9 +158,11 @@ public class ContentUIManager : MonoBehaviour
 
     private void _EditNote(CompleteNote _note)
     {
-        sentencesUI[currentSentenceIndex].EditNote(_note);
+        sentencesUI[GameManager.currentSentenceIndex].EditNote(_note);
     }
 
+    //Overall
+    
     public static void SaveSentence()
     {
         Instance._SaveSentence();
@@ -154,7 +170,8 @@ public class ContentUIManager : MonoBehaviour
 
     private void _SaveSentence()
     {
-        sentencesUI[currentSentenceIndex].SaveData();
+        if (sentencesData.Count == 0) return;
+        sentencesUI[prevCurrentSentenceIndex].SaveData();
     }
 
     public static void SharpSwitch()
@@ -178,6 +195,20 @@ public class ContentUIManager : MonoBehaviour
 
     private void _EditLyric()
     {
-        sentencesUI[currentSentenceIndex].EditLyric();
+        if (sentencesData.Count > 0)
+        {
+            sentencesUI[GameManager.currentSentenceIndex].EditLyric();
+        }
+    }
+
+    public static void OnClickUpdateContent(SentenceUIItem item)
+    {
+        Instance._OnClickUpdateContent(item);
+    }
+
+    private void _OnClickUpdateContent(SentenceUIItem _item)
+    {
+        var index = sentencesUI.FindIndex(sentence => sentence == _item);
+        GameManager.UpdateMode(sentencesData[index]);
     }
 }

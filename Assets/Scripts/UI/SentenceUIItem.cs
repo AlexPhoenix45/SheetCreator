@@ -8,6 +8,7 @@ using UnityEngine.UI;
 
 public class SentenceUIItem : MonoBehaviour
 {
+    [SerializeField] private TextMeshProUGUI indexText;
     [SerializeField] private Transform notesContainer;
     [SerializeField] private GameObject notePrefab;
     [SerializeField] private TMP_InputField lyricIF;
@@ -17,9 +18,7 @@ public class SentenceUIItem : MonoBehaviour
     private List<CompleteNote> notesData = new List<CompleteNote>();
     
     private CompleteSentence sentence;
-    private int activeNoteIndex = 0;
-    private bool isSelected = false;
-    
+        
     public void SetActiveSentence(bool value)
     {
         bgImage.color = value ? GameData.activeColor : GameData.normalColor; 
@@ -27,19 +26,21 @@ public class SentenceUIItem : MonoBehaviour
         {
             lyricIF.Select();
             lyricIF.ActivateInputField();
-            isSelected = true;
         }
         else
         {
             lyricIF.DeactivateInputField();
             EventSystem.current.SetSelectedGameObject(null);
-            isSelected = false;
+            
+            UpdatePositionNote(false);
         }
     }
     
-    public void Init(CompleteSentence sentence)
+    public void Init(CompleteSentence _sentence, int index)
     {
-        this.sentence = sentence;
+        sentence = _sentence;
+
+        indexText.text = index.ToString();
         lyricIF.text = sentence.lyric;
         notesUI.Clear();
         
@@ -56,7 +57,6 @@ public class SentenceUIItem : MonoBehaviour
         }
         
         lyricIF.onSubmit.AddListener(OnSubmit_LyricIF);
-        // lyricIF.onSelect.AddListener(OnSelect_LyricIF);
     }
 
     private void OnSubmit_LyricIF(string lyricText)
@@ -87,16 +87,19 @@ public class SentenceUIItem : MonoBehaviour
         }
     }
 
-    public void UpdatePositionNote(int index, bool activeValue)
+    public void UpdatePositionNote(bool activeValue)
     {
-        notesUI[activeNoteIndex].SetActive(false);
-        activeNoteIndex = index;
-        notesUI[activeNoteIndex].SetActive(activeValue);
+        foreach (var item in notesUI)
+        {
+            item.SetActive(false);
+        }
+        
+        notesUI[GameManager.currentNoteIndex].SetActive(activeValue);
     }
 
     public void EditNote(CompleteNote note)
     {
-        notesUI[activeNoteIndex].UpdateNote(note);
+        notesUI[GameManager.currentNoteIndex].UpdateNote(note);
     }
 
     public void RefreshNote()
@@ -110,16 +113,5 @@ public class SentenceUIItem : MonoBehaviour
     public void EditLyric()
     {
         lyricIF.Select();
-    }
-
-    private void OnSelect_LyricIF(string lyricText)
-    {
-        if (!isSelected) ContentUIManager.UpdateCurrentSentence(this, true);
-    }
-
-    private void OnDisable()
-    {
-        lyricIF?.onSelect.RemoveAllListeners();
-        lyricIF?.onSubmit.RemoveAllListeners();
     }
 }

@@ -1,12 +1,16 @@
+using System;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class NoteUIItem : MonoBehaviour
 {
     [SerializeField] private Image bgImage;
     [SerializeField] private TextMeshProUGUI noteText;
+
+    public Action<NoteUIItem> callback = null;
     
     private CompleteNote noteData = new CompleteNote();
 
@@ -57,6 +61,7 @@ public class NoteUIItem : MonoBehaviour
                 return;
         }
     }
+    
     public void UpdateNote()
     {
         switch (noteData.note)
@@ -103,7 +108,6 @@ public class NoteUIItem : MonoBehaviour
                 return;
         }
     }
-    
     
     public void SetActive(bool value)
     {
