@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Hierarchy;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
@@ -15,8 +17,6 @@ public class GameManager : MonoBehaviour
     private CompleteSheet currentSheet = new CompleteSheet();
     private List<CompleteSentence> sentencesData = new List<CompleteSentence>();
     private List<CompleteNote> notesData = new List<CompleteNote>();
-    private Notes currentKey;
-    private string songName;
 
     public static int currentSentenceIndex = 0;
     public static int currentNoteIndex = 0;
@@ -55,6 +55,22 @@ public class GameManager : MonoBehaviour
         {
             lastKeyPress = "sharpSwitchKey";
             SharpSwitch();
+        }
+
+        if (Input.GetKeyDown(GameData.shiftKeyUpKey))
+        {
+            ShiftKeyUp();
+        }
+
+        if (Input.GetKeyDown(GameData.shiftKeyDownKey))
+        {
+            ShiftKeyDown();
+        }
+
+        if (Input.GetKey(GameData.saveKeyComb1) && Input.GetKeyDown(GameData.saveKeyComb2))
+        {
+            Debug.Log("Sheet Saved");
+            SaveSheet();
         }
 
         if (!GameData.editMode)
@@ -484,7 +500,7 @@ public class GameManager : MonoBehaviour
     private void SharpSwitch()
     {
         GameData.isSharpNotes = !GameData.isSharpNotes;        
-        ContentUIManager.SharpSwitch();
+        ContentUIManager.RefreshSentence();
     }
 
     private void EditLyric()
@@ -604,17 +620,184 @@ public class GameManager : MonoBehaviour
     
     private void SaveNote()
     {
+        ContentUIManager.SaveSentence();
         sentencesData[currentSentenceIndex].notes = notesData.ToArray();
     }
 
     //Function
     private void ShiftKeyUp()
     {
-        
+        ContentUIManager.SaveSentence();
+        SaveSheet();
+        if (currentSheet.key + 1 > (Notes)11)
+        {
+            currentSheet.key = 0;
+        }
+        else
+        {
+            currentSheet.key++;
+        }
+        TransposeCheck(true);
+        ContentUIManager.SetSongKey(currentSheet.key);
+        ContentUIManager.RefreshSentence();
     }
 
     private void ShiftKeyDown()
     {
+        ContentUIManager.SaveSentence();
+        SaveSheet();
+        if (currentSheet.key - 1 < 0)
+        {
+            currentSheet.key = (Notes)11;
+        }
+        else
+        {
+            currentSheet.key--;
+        }
+        TransposeCheck(false);
+        ContentUIManager.SetSongKey(currentSheet.key);
+        ContentUIManager.RefreshSentence();
+    }
+
+    private void SaveSheet()
+    {
+        ContentUIManager.SaveSentence();
         
+        if (currentSheet.key == Notes.None)
+        {
+            currentSheet.key = Notes.C;
+        }
+
+        currentSheet.sentences = sentencesData.ToArray();
+        currentSheet.songName = ContentUIManager.GetFileName();
+        
+        ContentUIManager.RefreshSentence();
+        ContentUIManager.SetSongKey(currentSheet.key);
+    }
+
+    private void TransposeCheck(bool isShiftedUp)
+    {
+        foreach (var note in sentencesData.SelectMany(item => item.notes))
+        {
+            if (isShiftedUp)
+            {
+                if (note.note == Notes.B)
+                {
+                    note.note = Notes.C;
+                    note.octave++;
+                }
+                else
+                {
+                    note.note++;
+                }
+            }
+            else
+            {
+                if (note.note == Notes.C)
+                {
+                    note.note = Notes.B;
+                    note.octave--;
+                }
+                else
+                {
+                    note.note--;
+                }
+            }
+        }
+    }
+    
+    //Sheet
+    public static void RefreshSheet(CompleteSheet sheet)
+    {
+        Instance._RefreshSheet(sheet);
+    }
+
+    private void _RefreshSheet(CompleteSheet _sheet)
+    {
+        currentSheet = _sheet;
+        sentencesData = currentSheet.sentences.ToList();
+        ContentUIManager.SetFileName(currentSheet.songName);
+        ContentUIManager.SetSongKey(currentSheet.key);
+        ContentUIManager.RefreshSentence();
+    }
+
+    //File
+    public static string SheetToReadable()
+    {
+        return Instance._SheetToReadable();
+    }
+    
+    private string _SheetToReadable()
+    {
+        ContentUIManager.SaveSentence();
+        var data = "";
+        data += currentSheet.songName + " | Play at "+ currentSheet.key + "\n\n";
+        
+        foreach (var t in sentencesData)
+        {
+            data += t.lyric + "\n";
+            for (var j = 0; j < t.notes.Length; j++)
+            {
+                switch (t.notes[j].note)
+                {
+                    case Notes.A:
+                        data += "A" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.ASharp:
+                        data += (GameData.isSharpNotes ? "A#" : "Bb") + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.B:
+                        data += "B" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.C:
+                        data += "C" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.CSharp:
+                        data += (GameData.isSharpNotes ? "C#" : "Db") + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.D:
+                        data += "D" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.DSharp:
+                        data += (GameData.isSharpNotes ? "D#" : "Eb") + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.E:
+                        data += "E" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.F:
+                        data += "F" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.FSharp:
+                        data += (GameData.isSharpNotes ? "F#" : "Gb") + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.G:
+                        data += "G" + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.GSharp:
+                        data += (GameData.isSharpNotes ? "G#" : "Ab") + (t.notes[j].octave == 1 ? "" : t.notes[j].octave.ToString()) + "\t";
+                        break;
+                    case Notes.None:
+                    default:
+                        data += "...";
+                        break;
+                }
+                if (j == t.notes.Length - 1)
+                {
+                    data += "\n\n";
+                }
+            }
+        }
+        return data;
+    }
+
+    public static CompleteSheet GetSheet()
+    {
+        return Instance._GetSheet();
+    }
+
+    private CompleteSheet _GetSheet()
+    {
+        SaveSheet();
+        return currentSheet;
     }
 }

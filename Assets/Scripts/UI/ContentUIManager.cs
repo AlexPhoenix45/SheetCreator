@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class ContentUIManager : MonoBehaviour
@@ -9,6 +10,8 @@ public class ContentUIManager : MonoBehaviour
     [SerializeField] private SentenceUIItem sentencePrefab;
     [SerializeField] private RectTransform sentencesContainer;
     [SerializeField] private RectTransform viewport;
+    [SerializeField] private TMP_InputField fileNameIF;
+    [SerializeField] private TextMeshProUGUI songKeyText;
 
     private readonly float itemHeight = 60;
     private readonly float gap = 10;
@@ -161,7 +164,7 @@ public class ContentUIManager : MonoBehaviour
         sentencesUI[GameManager.currentSentenceIndex].EditNote(_note);
     }
 
-    //Overall
+    //Function
     
     public static void SaveSentence()
     {
@@ -174,16 +177,15 @@ public class ContentUIManager : MonoBehaviour
         sentencesUI[prevCurrentSentenceIndex].SaveData();
     }
 
-    public static void SharpSwitch()
+    public static void RefreshSentence()
     {
-        Instance._SharpSwitch();
+        Instance._RefreshSentence();
     }
 
-    private void _SharpSwitch()
+    private void _RefreshSentence()
     {
-        for (var i = 0; i < sentencesUI.Count; i++)
+        foreach (var item in sentencesUI)
         {
-            var item = sentencesUI[i];
             item.RefreshNote();
         }
     }
@@ -200,15 +202,35 @@ public class ContentUIManager : MonoBehaviour
             sentencesUI[GameManager.currentSentenceIndex].EditLyric();
         }
     }
-
-    public static void OnClickUpdateContent(SentenceUIItem item)
+    
+    //Get Set
+    public static string GetFileName()
     {
-        Instance._OnClickUpdateContent(item);
+        return Instance._GetFileName();
     }
 
-    private void _OnClickUpdateContent(SentenceUIItem _item)
+    private string _GetFileName()
     {
-        var index = sentencesUI.FindIndex(sentence => sentence == _item);
-        GameManager.UpdateMode(sentencesData[index]);
+        return fileNameIF.text;
+    }
+
+    public static void SetFileName(string fileName)
+    {
+        Instance._SetFileName(fileName);
+    }
+
+    private void _SetFileName(string _fileName)
+    {
+        fileNameIF.text = _fileName;
+    }
+
+    public static void SetSongKey(Notes note)
+    {
+        Instance._SetSongKey(note);
+    }
+
+    private void _SetSongKey(Notes _note)
+    {
+        songKeyText.text = "Key: " + _note;
     }
 }

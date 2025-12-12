@@ -35,6 +35,10 @@ public class GameData : MonoBehaviour
     public static KeyCode octaveUpKey = KeyCode.UpArrow;
     public static KeyCode octaveDownKey = KeyCode.DownArrow;
     public static KeyCode sharpSwitchKey = KeyCode.F1;
+    public static KeyCode shiftKeyDownKey = KeyCode.F2;
+    public static KeyCode shiftKeyUpKey = KeyCode.F3;
+    public static KeyCode saveKeyComb1 = KeyCode.LeftControl;
+    public static KeyCode saveKeyComb2 = KeyCode.S;
     
     //Color
     public static Color activeColor = new Color(1f, 0.3726415f, 0.3726415f);
@@ -47,19 +51,19 @@ public class GameData : MonoBehaviour
 
 public enum Notes
 {
-    None,
-    C,
-    CSharp,
-    D,
-    DSharp,
-    E,
-    F,
-    FSharp,
-    G,
-    GSharp,
-    A,
-    ASharp,
-    B,
+    None = -1,
+    C = 0,
+    CSharp = 1,
+    D = 2,
+    DSharp = 3,
+    E = 4,
+    F = 5,
+    FSharp = 6,
+    G = 7,
+    GSharp = 8,
+    A = 9,
+    ASharp = 10,
+    B = 11,
 }
 
 [Serializable]
@@ -81,5 +85,5 @@ public class CompleteSheet
 {
     public CompleteSentence[] sentences = null;
     public string songName = null;
-    public Notes key = Notes.None;
+    public Notes key = Notes.C;
 }

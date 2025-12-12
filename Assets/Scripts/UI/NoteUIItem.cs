@@ -13,7 +13,7 @@ public class NoteUIItem : MonoBehaviour
     public Action<NoteUIItem> callback = null;
     
     private CompleteNote noteData = new CompleteNote();
-
+    
     public void UpdateNote(CompleteNote note)
     {
         noteData = note;

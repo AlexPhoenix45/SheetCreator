@@ -1,12 +1,16 @@
+using System;
 using UnityEngine;
 using System.IO;
-using TMPro; 
+using TMPro;
+using UnityEngine.UI;
 
 public class FileManager : MonoBehaviour
 {
     public static FileManager Instance;
-    public TMP_InputField fileNameInput; 
-    private string fileName = "";
+    [SerializeField] private Button readButton;
+    [SerializeField] private Button writeJsonButton;
+    [SerializeField] private Button writeReadableButton;
+
     private string filePath = "";
 
     private void Awake()
@@ -16,28 +20,35 @@ public class FileManager : MonoBehaviour
             Instance = this;
         }
         
-        filePath = Path.Combine(Application.persistentDataPath, fileName);
-        Debug.Log("Save file location: " + filePath);
+        readButton.onClick.AddListener(OnClick_ReadButton);
+        writeJsonButton.onClick.AddListener(OnClick_WriteJsonButton);
+        writeReadableButton.onClick.AddListener(OnClick_WriteReadableButton);
     }
 
-    private void GetFileName()
+    private void GetPath(bool isJson)
     {
-        if (!fileNameInput)
+        var tempFileName = ContentUIManager.GetFileName();
+
+        if (tempFileName == string.Empty)
         {
-            fileName = "TemplateSheet.txt";
+            tempFileName = isJson ? "TemplateSheet.json" : "TemplateSheet.txt";
         }
         else
         {
-            fileName = fileNameInput.text + ".txt";
+            tempFileName += isJson ? ".json" : ".txt";
         }
+
+        filePath = Path.Combine(Application.persistentDataPath, tempFileName);
     }
 
-    private void WriteToFile(string content)
+    private void OnClick_WriteJsonButton()
     {
-        GetFileName();
+        GetPath(true);
+
         try
         {
-            File.WriteAllText(filePath, content);
+            var saveString = JsonUtility.ToJson(GameManager.GetSheet());
+            File.WriteAllText(filePath, saveString);
             Debug.Log("Successfully saved data to: " + filePath);
         }
         catch (System.Exception e)
@@ -46,17 +57,16 @@ public class FileManager : MonoBehaviour
         }
     }
 
-    public void LoadTextFromFile()
+    private void OnClick_ReadButton()
     {
-        GetFileName();
+        GetPath(true);
+
         if (File.Exists(filePath))
         {
-            var loadedText = File.ReadAllText(filePath);
-            Debug.Log("Loaded data: " + loadedText);
-            // if (fileNameInput != null)
-            // {
-            //     fileNameInput.text = loadedText;
-            // }
+            var jsonString = File.ReadAllText(filePath);
+            var tempSheet = JsonUtility.FromJson<CompleteSheet>(jsonString);
+            GameManager.RefreshSheet(tempSheet);
+            Debug.Log("Successfully loaded data from: " + filePath);
         }
         else
         {
@@ -64,12 +74,19 @@ public class FileManager : MonoBehaviour
         }
     }
 
-    // private void DataToFile()
-    // {
-    //     var content = "";
-    //     foreach (var VARIABLE in GameManager)
-    //     {
-    //         
-    //     }
-    // }
+    private void OnClick_WriteReadableButton()
+    {
+        GetPath(false);
+
+        try
+        {
+            var saveString = GameManager.SheetToReadable();
+            File.WriteAllText(filePath, saveString);
+            Debug.Log("Successfully saved data to: " + filePath);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error saving file: " + e.Message);
+        }
+    }
 }
